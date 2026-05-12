@@ -29,6 +29,47 @@ st.set_page_config(
 )
 
 st.markdown(CSS, unsafe_allow_html=True)
+
+# NOTE: Streamlit strips <script> tags, so OG / Twitter Card meta tags
+# cannot be injected at runtime. For proper share previews when sharing
+# this URL on LinkedIn / Twitter, host a small redirect page on
+# canonical.cc/dilution-lab with the meta tags + redirect to this app.
+
+# Use streamlit.components to inject a tiny script that adds meta tags via
+# postMessage to the parent — works around the <script> strip.
+import streamlit.components.v1 as components
+components.html(
+    """
+    <script>
+    (function() {
+      const tags = {
+        'og:title': 'Dilution Lab — by Canonical',
+        'og:description': 'See what every term sheet actually costs you. Model SAFEs, priced rounds, option pools, and exit math live.',
+        'og:type': 'website',
+        'og:site_name': 'Canonical',
+        'twitter:card': 'summary',
+        'twitter:title': 'Dilution Lab — by Canonical',
+        'twitter:description': 'See what every term sheet actually costs you. Model SAFEs, priced rounds, option pools, and exit math live.',
+        'twitter:creator': '@antavedissian',
+        'description': 'Model SAFEs, priced rounds, option pools, and exit math in real time. Built by Anthony Avedissian at Canonical.'
+      };
+      try {
+        const parentDoc = window.parent.document;
+        Object.entries(tags).forEach(([prop, content]) => {
+          let m = parentDoc.createElement('meta');
+          if (prop.startsWith('og:')) m.setAttribute('property', prop);
+          else m.setAttribute('name', prop);
+          m.setAttribute('content', content);
+          parentDoc.head.appendChild(m);
+        });
+        parentDoc.title = 'Dilution Lab · Canonical';
+      } catch (e) {}
+    })();
+    </script>
+    """,
+    height=0,
+)
+
 st.markdown(HERO_HTML, unsafe_allow_html=True)
 
 
@@ -651,8 +692,9 @@ if snapshots:
 st.markdown(
     """
     <div class='footer'>
-      Built by <a href='https://canonical.cc' target='_blank'>Canonical</a> · v0.1 ·
-      Educational tool. Not legal or financial advice.
+      Built by <a href='https://twitter.com/antavedissian' target='_blank' rel='noopener'>Anthony Avedissian</a>
+      at <a href='https://canonical.cc' target='_blank' rel='noopener'>Canonical</a> ·
+      v0.1 · Educational tool. Not legal or financial advice.
     </div>
     """,
     unsafe_allow_html=True,
