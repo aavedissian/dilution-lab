@@ -102,6 +102,14 @@ p, li, label, .stMarkdown {
   background: var(--accent);
   box-shadow: 0 0 12px var(--accent);
 }
+.hero .brand a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.hero .brand a:hover {
+  color: var(--accent-2);
+}
 .hero h1 {
   margin: 20px 0 12px !important;
   font-size: clamp(48px, 7vw, 84px) !important;
@@ -111,25 +119,7 @@ p, li, label, .stMarkdown {
   color: var(--subtle);
   font-size: 18px;
   max-width: 640px;
-  margin: 0 0 18px;
-}
-.hero .byline {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--muted);
   margin: 0;
-  font-weight: 500;
-}
-.hero .byline a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s ease;
-}
-.hero .byline a:hover {
-  border-bottom-color: var(--accent);
 }
 
 /* ============ CARDS / SECTIONS ============ */
@@ -418,13 +408,9 @@ HERO_HTML = """
 <div class="hero">
   <div class="brand">
     <span class="dot"></span>
-    <span>Canonical &mdash; Dilution Lab</span>
+    <span><a href="https://canonical.cc" target="_blank" rel="noopener">Canonical</a> &mdash; Dilution Lab</span>
   </div>
   <h1>Dilution <em>Lab</em></h1>
   <p class="tagline">See what every term sheet actually costs you. Model SAFEs, priced rounds, option pools, and exit math, all in your browser.</p>
-  <p class="byline">
-    By <a href="https://twitter.com/antavedissian" target="_blank" rel="noopener">Anthony Avedissian</a>
-    at <a href="https://canonical.cc" target="_blank" rel="noopener">Canonical</a>
-  </p>
 </div>
 """
