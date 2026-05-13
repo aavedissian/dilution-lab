@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dilution Lab · Canonical</title>
+<meta name="description" content="See what every term sheet actually costs you. Model SAFEs, priced rounds, option pools, and exit math live. Built by Anthony Avedissian at Canonical.">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Dilution Lab — by Canonical">
+<meta property="og:description" content="See what every term sheet actually costs you. Model SAFEs, priced rounds, option pools, and exit math live.">
+<meta property="og:url" content="https://dilutionlab.canonical.cc">
+<meta property="og:site_name" content="Canonical">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dilution Lab — by Canonical">
+<meta name="twitter:description" content="See what every term sheet actually costs you. Model SAFEs, priced rounds, option pools, and exit math live.">
+<meta name="twitter:creator" content="@antavedissian">
+
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='8' fill='%234a9eff'/%3E%3C/svg%3E">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="brand">
+      <span class="dot"></span>
+      <span><a href="https://canonical.cc" target="_blank" rel="noopener">Canonical</a> &mdash; Dilution Lab</span>
+    </div>
+    <h1>Dilution <em>Lab</em></h1>
+    <p class="tagline">See what every term sheet actually costs you. Model SAFEs, priced rounds, option pools, and exit math, all in your browser.</p>
+  </header>
+
+  <!-- Section 01: Scenario -->
+  <section>
+    <div class="sec-num">01 · Scenario</div>
+    <h2>Start from a template, or build your own.</h2>
+    <div class="row">
+      <button class="btn-add" id="btn-template">Template</button>
+      <button class="btn-add" id="btn-blank">Blank Slate</button>
+      <button class="btn-add" id="btn-stacked">Stacked Example</button>
+    </div>
+  </section>
+
+  <hr class="sec-divider">
+
+  <!-- Section 02: Founders -->
+  <section>
+    <div class="sec-num">02 · Founders &amp; Option Pool</div>
+    <h2>Who's on the cap table at incorporation?</h2>
+    <div class="row">
+      <div class="field-amount">
+        <label>Initial option pool (%)</label>
+        <input type="number" id="initial-pool" min="0" max="30" step="1" value="10">
+      </div>
+    </div>
+    <div id="founders-list" style="margin-top: 12px;"></div>
+    <button class="btn-add" id="btn-add-founder">+ Add founder</button>
+  </section>
+
+  <hr class="sec-divider">
+
+  <!-- Section 03: Funding Rounds -->
+  <section>
+    <div class="sec-num">03 · Funding Rounds</div>
+    <h2>Add rounds in sequence. SAFEs convert at the next priced round.</h2>
+    <div id="rounds-list"></div>
+    <div class="row" style="margin-top: 16px;">
+      <button class="btn-add" id="btn-add-safe">+ Add SAFE round</button>
+      <button class="btn-add" id="btn-add-priced">+ Add priced round</button>
+    </div>
+  </section>
+
+  <hr class="sec-divider">
+
+  <!-- Section 04: Cap Table -->
+  <section>
+    <div class="sec-num">04 · Cap Table</div>
+    <h2>Ownership evolution across rounds.</h2>
+    <div id="cap-table"></div>
+  </section>
+
+  <hr class="sec-divider">
+
+  <!-- Section 05: Exit Waterfall -->
+  <section class="exit-section">
+    <div class="sec-num">05 · Exit Waterfall</div>
+    <h2>Drag the slider. Watch the money move.</h2>
+    <div class="exit-slider-wrap">
+      <label class="field-label">Exit valuation</label>
+      <input type="range" class="exit-slider" id="exit-slider" min="6.69897" max="10" step="0.01" value="8.39794">
+    </div>
+    <div class="bignum-block">
+      <div class="bignum-label">Exit Valuation</div>
+      <div class="bignum" id="exit-bignum">$250.0M</div>
+    </div>
+    <div id="waterfall-table"></div>
+    <div class="takeaway-grid">
+      <div class="card card-accent">
+        <div class="bignum-label">Founders (1× non-part. preferred)</div>
+        <div class="bignum" id="founders-prefs">$0</div>
+        <div class="card-foot">Combined founder takeaway at this exit.</div>
+      </div>
+      <div class="card muted-card">
+        <div class="bignum-label">Founders (all common, no prefs)</div>
+        <div class="bignum" id="founders-common">$0</div>
+        <div class="card-foot">What founders would get if no liquidation preferences existed.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    Built by <a href="https://twitter.com/antavedissian" target="_blank" rel="noopener">Anthony Avedissian</a>
+    at <a href="https://canonical.cc" target="_blank" rel="noopener">Canonical</a> ·
+    v0.1 · Educational tool. Not legal or financial advice.
+  </footer>
+
+</div>
+
+<script src="capmath.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

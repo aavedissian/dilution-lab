@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Cap Math Tests</title>
+<style>body{font-family:monospace;background:#0a1428;color:#fff;padding:24px}.pass{color:#5bd9c4}.fail{color:#ff6b6b}h1{color:#4a9eff}</style>
+</head>
+<body>
+<h1>Cap math test results</h1>
+<pre id="out">Running...</pre>
+<script src="capmath.js"></script>
+<script>
+const out = document.getElementById('out');
+let buf = '';
+const log = (m) => { buf += m + '\n'; out.textContent = buf; };
+const pct = (x) => (x*100).toFixed(2) + '%';
+const dollars = (x) => '$' + x.toLocaleString(undefined, {maximumFractionDigits:0});
+const close = (a, b, tol=1e-3) => Math.abs(a-b) < tol;
+
+let passed = 0, failed = 0;
+const assert = (cond, msg) => {
+  if (cond) { log('  ✓ ' + msg); passed++; }
+  else      { log('  ✗ ' + msg); failed++; }
+};
+
+// Test 1: Founders only
+log('\n=== Test 1: Founders only ===');
+let ct = CapMath.initializeCapTable(
+  [{name:'Alice', pct:50},{name:'Bob', pct:50}], 0.10
+);
+const total1 = ct.holders.reduce((s,h)=>s+CapMath.holderPercent(ct,h),0);
+assert(close(total1, 1.0, 1e-6), `Total = 100% (got ${pct(total1)})`);
+const alice = ct.holders.find(h=>h.name==='Alice');
+assert(close(CapMath.holderPercent(ct,alice), 0.45, 1e-6), `Alice = 45% (got ${pct(CapMath.holderPercent(ct,alice))})`);
+
+// Test 2: SAFE then priced — verifies SAFE conversion
+log('\n=== Test 2: $1M SAFE @ $10M cap, then $3M @ $12M pre ===');
+let snaps = CapMath.simulate(
+  [{name:'Alice', pct:50},{name:'Bob', pct:50}],
+  0.10,
+  [
+    { name:'Pre-seed', kind:'SAFE', safes:[{name:'Angel A', amount:1_000_000, cap:10_000_000}] },
+    { name:'Seed', kind:'PRICED', preMoney:12_000_000, raiseAmount:3_000_000, optionPoolPctPost:0.10, investors:[{name:'Seed VC', amount:3_000_000}] },
+  ]
+);
+let final = snaps[snaps.length - 1];
+const seedVC = final.holders.find(h=>h.name==='Seed VC');
+assert(close(CapMath.holderPercent(final, seedVC), 0.20, 1e-4), `Seed VC = 20% (got ${pct(CapMath.holderPercent(final, seedVC))})`);
+const totalT2 = final.holders.filter(h=>!CapMath.isUnconvertedSafe(h)).reduce((s,h)=>s+CapMath.holderPercent(final,h),0);
+assert(close(totalT2, 1.0, 1e-4), `Total = 100%`);
+
+// Test 3: Multiple SAFEs at different caps — matches Python test_math.py
+log('\n=== Test 3: 3 SAFEs at different caps + priced ===');
+snaps = CapMath.simulate(
+  [{name:'F1', pct:40},{name:'F2', pct:40},{name:'F3', pct:20}],
+  0.10,
+  [
+    { name:'Pre-seed', kind:'SAFE', safes:[
+      {name:'Canonical', amount:1_500_000, cap:15_000_000},
+      {name:'Angel A',   amount:500_000,   cap:12_000_000},
+      {name:'Angel B',   amount:250_000,   cap:10_000_000},
+    ]},
+    { name:'Seed', kind:'PRICED', preMoney:25_000_000, raiseAmount:8_000_000, optionPoolPctPost:0.12, investors:[{name:'Tier 1 VC', amount:8_000_000}]},
+  ]
+);
+final = snaps[snaps.length - 1];
+// Python ran this test and got: Canonical 6.96%, Angel A 2.90%, Angel B 1.74%, Tier 1 VC 24.24%
+const canonical = final.holders.find(h=>h.name==='Canonical');
+const angelA = final.holders.find(h=>h.name==='Angel A');
+const angelB = final.holders.find(h=>h.name==='Angel B');
+const tier1 = final.holders.find(h=>h.name==='Tier 1 VC');
+assert(close(CapMath.holderPercent(final, canonical), 0.0696, 1e-3), `Canonical 6.96% (got ${pct(CapMath.holderPercent(final, canonical))})`);
+assert(close(CapMath.holderPercent(final, angelA), 0.0290, 1e-3), `Angel A 2.90% (got ${pct(CapMath.holderPercent(final, angelA))})`);
+assert(close(CapMath.holderPercent(final, angelB), 0.0174, 1e-3), `Angel B 1.74% (got ${pct(CapMath.holderPercent(final, angelB))})`);
+assert(close(CapMath.holderPercent(final, tier1), 0.2424, 1e-3), `Tier 1 VC 24.24% (got ${pct(CapMath.holderPercent(final, tier1))})`);
+
+// Test 4: Exit waterfall
+log('\n=== Test 4: Exit waterfall (1x non-part preferred) ===');
+snaps = CapMath.simulate(
+  [{name:'Alice', pct:50},{name:'Bob', pct:50}], 0.10,
+  [{ name:'Seed', kind:'PRICED', preMoney:12_000_000, raiseAmount:3_000_000, optionPoolPctPost:0.10, investors:[{name:'Seed VC', amount:3_000_000}]}]
+);
+final = snaps[snaps.length - 1];
+// At $3M exit, VC should take preference ($3M); founders get $0
+let w = CapMath.waterfallWithPrefs(final, 3_000_000);
+assert(close(w['Seed VC'], 3_000_000, 1), `@ $3M exit: VC gets $3M (got ${dollars(w['Seed VC'])})`);
+assert(close(w['Alice'], 0, 1), `@ $3M exit: Alice gets $0 (got ${dollars(w['Alice'])})`);
+
+// At $1B exit, VC converts: 20% × $1B = $200M
+w = CapMath.waterfallWithPrefs(final, 1_000_000_000);
+assert(close(w['Seed VC'], 200_000_000, 1000), `@ $1B exit: VC gets $200M (got ${dollars(w['Seed VC'])})`);
+assert(close(w['Alice'], 350_000_000, 1000), `@ $1B exit: Alice gets $350M (got ${dollars(w['Alice'])})`);
+
+log(`\n--- ${passed} passed, ${failed} failed ---`);
+if (failed === 0) log('\n✓ All math tests pass. JS port matches Python.');
+</script>
+</body>
+</html>
