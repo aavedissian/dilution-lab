@@ -270,65 +270,68 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   margin: 12px 0 16px;
 }
 
-/* ============ DATA TABLES (white cards on blue) ============ */
+/* ============ DATA TABLES (matched to round-card glass) ============ */
 .dl-table {
   width: 100%;
   border-collapse: collapse;
   margin: 18px 0 0;
-  background: var(--card-bg);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 12px;
   overflow: hidden;
   font-family: var(--font);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .dl-table th {
   font-family: var(--mono);
   font-size: 10px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-soft);
   font-weight: 600;
   padding: 18px 20px;
   text-align: left;
-  border-bottom: 1px solid var(--card-line);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
   white-space: nowrap;
-  background: var(--card-tint);
+  background: rgba(255,255,255,0.04);
 }
 .dl-table th.dl-num { text-align: right; }
 .dl-table td {
   padding: 14px 20px;
-  border-bottom: 1px solid var(--card-line);
-  color: var(--card-ink-2);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  color: var(--subtle);
   font-size: 14px;
   vertical-align: middle;
 }
 .dl-table tbody tr:last-child td { border-bottom: none; }
-.dl-table tbody tr:hover td { background: var(--card-tint); }
+.dl-table tbody tr:hover td { background: rgba(255,255,255,0.04); }
 .dl-table td.holder-name {
   font-weight: 500;
-  color: var(--card-ink);
+  color: var(--ink);
   letter-spacing: -0.005em;
 }
 .dl-table td.number {
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 500;
-  color: var(--card-ink);
+  color: var(--ink);
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 .dl-table td.muted {
-  color: var(--card-muted);
+  color: var(--muted);
   font-family: var(--mono);
   text-align: right;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 .safe-tag {
   font-family: var(--mono);
   font-size: 11px;
-  color: var(--accent);
-  background: var(--accent-soft);
-  padding: 5px 10px;
+  color: var(--accent-soft);
+  background: rgba(191, 219, 254, 0.14);
+  border: 1px solid rgba(191, 219, 254, 0.25);
+  padding: 4px 9px;
   border-radius: 4px;
   letter-spacing: 0.04em;
   white-space: nowrap;
